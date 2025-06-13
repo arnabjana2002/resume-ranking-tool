@@ -6,6 +6,22 @@ import re
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import spacy
+
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+nltk.download('averaged_perceptron_tagger_eng')
+nltk.download('punkt_tab') # Ensure punkt_tab is downloaded
+import re
+import string
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk import pos_tag
+from nltk.corpus import wordnet
+from nltk.stem import WordNetLemmatizer
 
 
 app = Flask(__name__)
@@ -64,6 +80,23 @@ def upload_multiple_pdfs():
 # Download stopwords if not already done
 nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
+lemmatizer = WordNetLemmatizer()
+
+# Function to map NLTK POS tags to WordNet POS tags
+def get_wordnet_pos(tag):
+    if tag.startswith('J'):
+        return wordnet.ADJ
+    elif tag.startswith('V'):
+        return wordnet.VERB
+    elif tag.startswith('N'):
+        return wordnet.NOUN
+    elif tag.startswith('R'):
+        return wordnet.ADV
+    else:
+        return wordnet.NOUN
+
+nlp = spacy.load("en_core_web_sm")
+
 def clean_text(text):
     # 1. Lowercase
     text = text.lower()
